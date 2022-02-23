@@ -53,7 +53,7 @@ for i in range(nof_pages):
     # For every TE
     for te in time_entries:
         # Check if TE belongs to the target project...
-        if te["project"] == project:
+        if project != "ALL" and te["project"] == project:
             # ...get the date of the TE and check if it is a new date
             temp_date = datetime.strptime(te['start'], '%Y-%m-%dT%H:%M:%S%z')
             # If this is a new date, then start a new date section in the report. 
@@ -73,6 +73,27 @@ for i in range(nof_pages):
                 if i != 0:
                     journal_text = journal_text + "<li>" + temp_notes[i] + "</li>"
             journal_text = journal_text + "</ul>"
+        else:
+            if te['description'].find('[N]') != -1:
+                # ...get the date of the TE and check if it is a new date
+                temp_date = datetime.strptime(te['start'], '%Y-%m-%dT%H:%M:%S%z')
+                # If this is a new date, then start a new date section in the report. 
+                # NOTE: This check needs to be performed between strings always, otherwise it returns TRUE (since str <> datetime).
+                if str(temp_date.strftime('%d %b %Y')) != cur_date:
+                    journal_text = journal_text + "<h3><span style='background-color: #eee'>Date: " + temp_date.strftime('%d %b %Y') + "</span></h3>"
+                    cur_date = str(temp_date.strftime('%d %b %Y'))
+                # Else just append the note of the TE to the current date section
+                temp_description = te['description'].split('[N]')
+                temp_title = temp_description[0]
+                # Append the title of the note. It is stored before [N] in the Toggl TE
+                journal_text = journal_text + "<p><u>Project</u>: <b>" + te["project"] + "</b> <u>Action</u>: <b>"+ temp_title + "</b></p>"
+                # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a note)
+                temp_notes = temp_description[1].split('-')
+                journal_text = journal_text + "<ul style='list-style-type: circle;'>"
+                for i in range(len(temp_notes)):
+                    if i != 0:
+                        journal_text = journal_text + "<li>" + temp_notes[i] + "</li>"
+                journal_text = journal_text + "</ul>"
 
 # Get report's timestamp
 today = datetime.now()

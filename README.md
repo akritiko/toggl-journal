@@ -9,6 +9,7 @@ This is a proof of concept project that I started in order to get familiar with 
 ## Features
 
 - Automatically creates reports from Toggl Time Entries based on project and time windows (since - until dates).
+- If the user puts 'ALL' instead of a project name, the script generates a report for all projects within the since - until timeframe.
 - Generates report in .html format.
 - Generates report in .pdf format.
 - Handles pagination for high time entry volume, respecting the API limitations. 
@@ -67,3 +68,12 @@ for example:
 Meeting w/ John [N] - Refactor library X - We need another awesome Senior Dev
 
 ![screenshot](/images/screenshot_1.png)
+
+## Example output
+
+There are two output templates:
+
+- Report for a specific project name.
+- Report for all projects within a selected timeframe.
+
+You can find examples of these reports in .html and .pdf format in [sample_exports](/sample_exports) folder.
