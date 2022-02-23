@@ -1,71 +1,79 @@
 """
 Title:              toggl-journal
 Description:        Script to create a Work Journal out of the Toggl Entries for a specific 
-                    project. Sample script created for the Toggl Test Week to test the API
+                    Toggl Project. Sample script created for the Toggl Test Week to test the API
                     and provide an easy way to report after the end of it :)
-Author:             Apostolos Kritikos
-License:            MIT
+Author:             Apostolos Kritikos <akritiko@gmail.com>
+License:            MIT (You can find a human friendly version of the license here: https://www.tldrlegal.com/l/mit)
 Available at:       https://github.com/akritiko/toggl-journal
 Console Command:    python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <AUTHORS_FULL_NAME>
 """
 
 import sys
+import pdfkit
 from datetime import datetime
 from toggl.TogglPy import Toggl
 
-# Console & Other parameters
+# Initialize parameters
 toggl_api_key = sys.argv[1]                         # A valid Toggl API Key
 since = sys.argv[2]                                 # Report Start Date (in YYYY-MM-DD format)
 since_date = datetime.strptime(since, '%Y-%m-%d')   
 until = sys.argv[3]                                 # Report End Date (in YYYY-MM-DD format)
 until_date = datetime.strptime(until, '%Y-%m-%d')
-workspace_id = sys.argv[4]                          # Workspace ID //TODO: Make it work with Workspace Name
-project = sys.argv[5]                               # Project Name
-fullname = sys.argv[6]                              # Author's Full Name
+project = sys.argv[4]                               # Project Name
+fullname = sys.argv[5]                              # Author's Full Name
 
-# Wrapper init & set API Key 
+# Initialize TogglePy instance & set API Key 
 toggl = Toggl()
 toggl.setAPIKey(toggl_api_key)
 
-# HTTP Request for Time Entries (TEs)
+# Infer default workspace from user [//TODO: extend functionality for multiple workspace accounts / paid feature]
+response = toggl.request("https://api.track.toggl.com/api/v8/me")
+workspace_id = str(response['data']['default_wid'])
+
+# HTTP Request Time Entries (TEs)
 response = toggl.request("https://api.track.toggl.com/reports/api/v2/details?workspace_id=" + workspace_id + "&since=" + since + "&until=" + until + "&user_agent=" + toggl_api_key)
-# Isolate Time Entry data
+# Isolate TEs data
 time_entries = response['data']
-# Store total TEs number
+# Store total TEs number (used for possible pagination of results)
 total_te = len(time_entries)
 # Calculate pages (50 TEs per page - API limit -)
-total_pages = round(total_te / 50)
+nof_pages = round(total_te / 50)
 
-# Journal initialization w/ Project, Author, Start & End report dates.
+# Initialize journal string with Project, Author, Start & End report dates. We chose html format since it can easily be exported in .html and .pdf formats.
+# //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed to templates!
 journal_text = "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> by <span style='background-color: #eee'>" + fullname + "</span></h1>"
 journal_text = journal_text + "<h2> From: <span style='background-color: #eee'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: #eee'>" + until_date.strftime('%d %b %Y') + "</span></h2>"
 journal_text = journal_text + "<hr>"
 
-# Iterate through TEs
-for te in time_entries:
-    # Initialize cur_date
-    cur_date = ""
-    # Check if TE belongs to the target project
-    if te["project"] == project:
-        # Get the date of the TE and check if it is a new date
-        temp_date = datetime.strptime(te['start'], '%Y-%m-%dT%H:%M:%S%z')
-        # If this is a new date, then start a new date section in the report
-        if temp_date != cur_date:
-            journal_text = journal_text + "<h3> <span style='background-color: #eee'>Day: " + temp_date.strftime('%d %b %Y') + "</span></h3>"
-            cur_date = temp_date
-        # else just append the note of the TE to the current date section
-        temp_description = te['description'].split('[N]')
-        temp_title = temp_description[0]
-        # this is the title of the note identified by [N] in the Toggl TE
-        journal_text = journal_text + "<p><b> Action: " + temp_title + "</b></p>"
-        journal_text = journal_text + "<p>Notes: </p>"
-        # these are the notes of the TE identified by '-' (each dash indicates a note)
-        temp_notes = temp_description[1].split('-')
-        journal_text = journal_text + "<ul>"
-        for i in range(len(temp_notes)):
-            if i != 0:
-                journal_text = journal_text + "<li>" + temp_notes[i] + "</li>"
-        journal_text = journal_text + "</ul>"
+# Initialize cur_date
+cur_date = ""
+
+#Iterate through TEs pagination
+for i in range(nof_pages):
+    # For every TE
+    for te in time_entries:
+        # Check if TE belongs to the target project...
+        if te["project"] == project:
+            # ...get the date of the TE and check if it is a new date
+            temp_date = datetime.strptime(te['start'], '%Y-%m-%dT%H:%M:%S%z')
+            # If this is a new date, then start a new date section in the report. 
+            # NOTE: This check needs to be performed between strings always, otherwise it returns TRUE (since str <> datetime).
+            if str(temp_date.strftime('%d %b %Y')) != cur_date:
+                journal_text = journal_text + "<h3><span style='background-color: #eee'>Date: " + temp_date.strftime('%d %b %Y') + "</span></h3>"
+                cur_date = str(temp_date.strftime('%d %b %Y'))
+            # Else just append the note of the TE to the current date section
+            temp_description = te['description'].split('[N]')
+            temp_title = temp_description[0]
+            # Append the title of the note. It is stored before [N] in the Toggl TE
+            journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "</b></p>"
+            # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a note)
+            temp_notes = temp_description[1].split('-')
+            journal_text = journal_text + "<ul style='list-style-type: circle;'>"
+            for i in range(len(temp_notes)):
+                if i != 0:
+                    journal_text = journal_text + "<li>" + temp_notes[i] + "</li>"
+            journal_text = journal_text + "</ul>"
 
 # Get report's timestamp
 today = datetime.now()
@@ -74,6 +82,10 @@ journal_text = journal_text + "Report generated on: " + today.strftime('%d %b %Y
 
 # Generate report in .html format
 filename = fullname + " - " + project + " - " + since + " - " + until + ".html"
+filename_no_ext = fullname + " - " + project + " - " + since + " - " + until
 Html_file= open(filename,"w")
 Html_file.write(journal_text)
 Html_file.close()
+
+
+pdfkit.from_file(filename, filename+".pdf")
