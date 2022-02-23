@@ -1,8 +1,7 @@
 """
 Title:              toggl-journal
 Description:        Script to create a Work Journal out of the Toggl Entries for a specific 
-                    Toggl Project. Sample script created for the Toggl Test Week to test the API
-                    and provide an easy way to report after the end of it :)
+                    Toggl Project.
 Author:             Apostolos Kritikos <akritiko@gmail.com>
 License:            MIT (You can find a human friendly version of the license here: https://www.tldrlegal.com/l/mit)
 Available at:       https://github.com/akritiko/toggl-journal
@@ -21,7 +20,6 @@ since_date = datetime.strptime(since, '%Y-%m-%d')
 until = sys.argv[3]                                 # Report End Date (in YYYY-MM-DD format)
 until_date = datetime.strptime(until, '%Y-%m-%d')
 project = sys.argv[4]                               # Project Name
-fullname = sys.argv[5]                              # Author's Full Name
 
 # Initialize TogglePy instance & set API Key 
 toggl = Toggl()
@@ -30,6 +28,7 @@ toggl.setAPIKey(toggl_api_key)
 # Infer default workspace from user [//TODO: extend functionality for multiple workspace accounts / paid feature]
 response = toggl.request("https://api.track.toggl.com/api/v8/me")
 workspace_id = str(response['data']['default_wid'])
+fullname = str(response['data']['fullname'])
 
 # HTTP Request Time Entries (TEs)
 response = toggl.request("https://api.track.toggl.com/reports/api/v2/details?workspace_id=" + workspace_id + "&since=" + since + "&until=" + until + "&user_agent=" + toggl_api_key)
