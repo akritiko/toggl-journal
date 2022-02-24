@@ -55,7 +55,7 @@ python toggljournal.py python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_
 
 - <END_DATE> (string): The end date in YYYY-MM-DD format (i.e. 2022-02-22).
 
-- <PROJECT_NAME> (string): The project name for which we want to create a report.
+- <PROJECT_NAME> (string): The project name for which we want to create a report or "ALL" if we want a report for all available projects between the time period defined by START_DATE and END_DATE.
 
 # Annotation in the Toggl Environment
 
