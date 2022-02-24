@@ -77,3 +77,7 @@ There are two output templates:
 - Report for all projects within a selected timeframe.
 
 You can find examples of these reports in .html and .pdf format in [sample_exports](/sample_exports) folder.
+
+## Future work
+
+- Send the report directly via e-mail
