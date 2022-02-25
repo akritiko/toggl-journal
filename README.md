@@ -46,7 +46,7 @@ sudo apt-get install wkhtmltopdf
 ## Run the script
 
 ```python
-python toggljournal.py python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME>
+python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME>
 ```
 
 - <TOGGL_API_KEY> (string): The unique user's API Key. You can find it by following [this official guide](https://support.toggl.com/en/articles/3116844-where-is-my-api-key-located).
