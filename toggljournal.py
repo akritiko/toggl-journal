@@ -13,6 +13,7 @@ Console Command:    python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DAT
 import sys
 import pdfkit
 import pandas as pd
+from datetime import date
 from datetime import datetime
 from toggl.TogglPy import Toggl
 
@@ -97,7 +98,12 @@ toggl_api_key = sys.argv[1]                         # A valid Toggl API Key
 since = sys.argv[2]                                 # Report Start Date (in YYYY-MM-DD format)
 since_date = datetime.strptime(since, '%Y-%m-%d')   
 until = sys.argv[3]                                 # Report End Date (in YYYY-MM-DD format)
-until_date = datetime.strptime(until, '%Y-%m-%d')
+until_date = ""                                 
+if until != 'TODAY':
+    until_date = datetime.strptime(until, '%Y-%m-%d')
+else:
+    until = str(date.today())
+    until_date = datetime.strptime(until, '%Y-%m-%d')
 project = sys.argv[4]                               # Project Name or ALL for all projects
 
 # Initialize TogglePy instance & set API Key 
