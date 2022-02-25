@@ -13,6 +13,7 @@ Console Command:    python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DAT
 import sys
 import pdfkit
 import pandas as pd
+import logging
 from datetime import date
 from datetime import datetime
 from toggl.TogglPy import Toggl
@@ -93,6 +94,10 @@ def exports(journal_text):
 
 """ MAIN SCRIPT """
 
+# Initialize logging
+logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO, format='%(asctime)s [ %(levelname)s ] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+
+
 # Initialize parameters
 toggl_api_key = sys.argv[1]                         # A valid Toggl API Key
 since = sys.argv[2]                                 # Report Start Date (in YYYY-MM-DD format)
@@ -113,7 +118,9 @@ toggl.setAPIKey(toggl_api_key)
 # Infer default workspace from user [//TODO: extend functionality for multiple workspace accounts / paid feature]
 response = toggl.request("https://api.track.toggl.com/api/v8/me")
 workspace_id = str(response['data']['default_wid'])
+logging.info("Workspace_id infered from API")   
 fullname = str(response['data']['fullname'])
+logging.info("Fullanme infered from API") 
 
 # HTTP Request Time Entries (TEs)
 response = toggl.request("https://api.track.toggl.com/reports/api/v2/details?workspace_id=" + workspace_id + "&since=" + since + "&until=" + until + "&user_agent=" + toggl_api_key)
@@ -143,7 +150,8 @@ if project != "ALL":
         exports(journal_text)
     else:
         # Print error
-        print("ERROR: This project either does not exists or does not have any Time Entries that follow the toggl-journal notation.")
+        logging.error("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+
 else:
     # For all projects between the selected dates (since - until)
     projects = pd.unique(df['project'])
@@ -162,7 +170,8 @@ else:
             journal_text = journal_text + format_output(newdf, nof_pages)
         else:
             # Print error
-            print("ERROR: This project either does not exists or does not have any Time Entries that follow the toggl-journal notation.")
+            logging.error("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+
     # Since we got many possible projects that qualify
     if valid_report:
         # We need only one footer in the end of the documents
