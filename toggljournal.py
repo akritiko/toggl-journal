@@ -19,6 +19,15 @@ from toggl.TogglPy import Toggl
 """ Define functions """
 
 # Filters the TEs by project name
+def convert_millies_to_time(millis):
+    millis = int(millis)
+    seconds=(millis/1000)%60
+    seconds = int(seconds)
+    minutes=(millis/(1000*60))%60
+    minutes = int(minutes)
+    hours=(millis/(1000*60*60))%24
+    return ("%dh %dm" % (hours, minutes))
+
 def filter_te_with_project(entries, project_name):
     return entries[entries['project'] == project_name]
 
@@ -54,7 +63,7 @@ def format_output(entries, nofpages):
                 temp_description = entries['description'][ind].split('[N]')
                 temp_title = temp_description[0]
                 # Append the title of the note. It is stored before [N] in the Toggl TE
-                journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "</b></p>"
+                journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "(" + convert_millies_to_time(str(entries['dur'][ind])) + ")" + "</b></p>"
                 # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a note)
                 temp_notes = temp_description[1].split('-')
                 journal_text = journal_text + "<ul style='list-style-type: circle;'>"
