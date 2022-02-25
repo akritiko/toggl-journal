@@ -25,7 +25,6 @@ def convert_millies_to_time(millis):
     hours=(millis/(1000*60*60))%24
     return ("%dh %dm" % (hours, minutes))
 
-
 def filter_te_with_project(entries, project_name):
     """ Filters TEs by project name. """
     return entries[entries['project'] == project_name]
