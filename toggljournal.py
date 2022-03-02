@@ -60,7 +60,10 @@ def format_output(entries, nofpages):
                 temp_description = entries['description'][ind].split('[N]')
                 temp_title = temp_description[0]
                 # Append the title of the note. It is stored before [N] in the Toggl TE.
-                journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "(" + convert_millies_to_time(str(entries['dur'][ind])) + ")" + "</b></p>"
+                if entries['project'][ind] == "Personal Journal":
+                    journal_text = journal_text + "<p><u>Entry</u>: <b>"+ temp_title + "</b></p>"
+                else:
+                    journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "(" + convert_millies_to_time(str(entries['dur'][ind])) + ")" + "</b></p>"
                 # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a note).
                 temp_notes = temp_description[1].split('-')
                 journal_text = journal_text + "<ul style='list-style-type: circle;'>"
@@ -75,13 +78,14 @@ def create_report_footer(journal_text):
     today = datetime.now()
     journal_text = journal_text + "<hr>" 
     journal_text = journal_text + "Report generated on: " + today.strftime('%d %b %Y, %H:%M:%S %z') + " by <a href='https://github.com/akritiko/toggl-journal' target='top'>toggl-journal</a>"
+    journal_text = journal_text + "</body></html>"
     return journal_text
 
 def exports(journal_text, fullname, project, since, until):
     """ Generate report in .html and .pdf formats. """
     filename = fullname + " - " + project + " - " + since + " - " + until + ".html"
     filename_no_ext = fullname + " - " + project + " - " + since + " - " + until
-    Html_file= open(filename,"w")
+    Html_file= open(filename, "w", encoding='utf8')
     Html_file.write(journal_text)
     Html_file.close()
     pdfkit.from_file(filename, filename_no_ext + ".pdf")
@@ -120,7 +124,8 @@ def main(args):
 
     # Initialize journal string with Project, Author, Start & End report dates. We chose html format since it can easily be exported in .html and .pdf formats.
     # //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed to templates!
-    journal_text = "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> by <span style='background-color: #eee'>" + fullname + "</span></h1>"
+    journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
+    journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> by <span style='background-color: #eee'>" + fullname + "</span></h1>"
     journal_text = journal_text + "<h2> From: <span style='background-color: #eee'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: #eee'>" + until_date.strftime('%d %b %Y') + "</span></h2>"
     journal_text = journal_text + "<hr>"
     
