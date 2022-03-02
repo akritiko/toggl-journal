@@ -37,10 +37,13 @@ pip install pdfkit
 
 __WkHtmlToPdf__
 
+Ubuntu setup:
+
 ```bash
 sudo apt-get install wkhtmltopdf
 ```
-[more information + widnows setup here](https://www.geeksforgeeks.org/python-convert-html-pdf/)
+
+[Windows setup (and other information)](https://www.geeksforgeeks.org/python-convert-html-pdf/)
 
 
 ## Run the script
