@@ -1,5 +1,4 @@
 # File:             toggljournal.py
-# Project:          toggl-journal
 # Description:      Script to create a daily Work Journal out of Toggl Track Time Entries.
 # Author:           Apostolos Kritikos <akritiko@gmail.com>
 # License:          MIT (human readable version: https://www.tldrlegal.com/l/mit)
@@ -133,7 +132,7 @@ def main(args):
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
         else:
-            logging.error("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+            logging.warn("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
     else:
         projects = pd.unique(df['project'])
         valid_report = False # Flag to create the report if at least one project qualifies re notation.        
@@ -144,7 +143,7 @@ def main(args):
                 journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>Project: "+ str(p) + "</b></h3>"
                 journal_text = journal_text + format_output(newdf, nof_pages)
             else:
-                logging.error("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+                logging.warn("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
         if valid_report: # Since we got many possible projects that qualify we need only one footer in the end of the documents.
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)

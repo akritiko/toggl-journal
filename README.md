@@ -1,10 +1,10 @@
 # toggl-journal
 
-toggl-journal is a python script that can easily create human readable reports by automatically synthesizing time entry descriptions with a very simple notation. 
+toggl-journal is a python script that can easily create human readable journals by automatically synthesizing Toggl Track time entries using a very simple notation. 
 
-The user can filter the report by project and time window (since date - until date). The report is being exported in .html and .pdf format in order to be easily shareable (copy-paste) via an e-mail or slack and / or attached as a file. 
+The user can filter the report by project and by a time window (since date - until date). The report is being exported in .html and .pdf formats in order to be easily shareable (copy-paste) via an e-mail or slack or be attached / send as a file. 
 
-This is a proof of concept project that I started in order to get familiar with the Toggl API and, at the same time, automate my every-day work journal through Toggl.
+This is a proof of concept project tarted in order for me to get familiar with the Toggl API and, at the same time, automate my every-day professional (and personal) journalling process with the use of Toggl Track.
 
 ## Features
 
@@ -78,6 +78,43 @@ There are two output templates:
 
 You can find examples of these reports in .html and .pdf format in [sample_exports](/sample_exports) folder.
 
+## Logging
+
+The script comes with a log (app.log) in which you will find notes during the runtime of the project. 
+
+- [ INFO ] entries: Are notes recorded by the app (mainly for correct runtime verification).
+- [ WARNING ] entries: Are notes recorded by the app in case something goes wrong / or to clarify specific functionality of the script.
 ## Future work
 
-- Send the report directly via e-mail
+- Send the report directly by e-mail
+- Support .odt format
+- Support .doc format
+- Support .rtf format
+
+## Disclaimer
+
+This open source software project is not related in any way with the official [Toggl Track tool](https://toggl.com/track/) or the [Toggl company](https://toggl.com/).
+
+## License
+
+MIT License
+
+Copyright (c) 2022 Apostolos Kritikos <akritiko@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
