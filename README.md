@@ -99,7 +99,7 @@ This open source software project is not related in any way with the official [T
 
 MIT License
 
-Copyright (c) 2022 Apostolos Kritikos <akritiko@gmail.com>
+Copyright (c) 2022 Apostolos Kritikos <akritiko [at] gmail [dot] com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
