@@ -127,12 +127,12 @@ def main(args):
     if project != "ALL":
         newdf = filter_te_with_project(df, project)
         if hasN(newdf):
-            journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>Project: " + project + "</b></h3>"
+            journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>" + project + "</b></h3>"
             journal_text = journal_text + format_output(newdf, nof_pages)
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
         else:
-            logging.warn("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+            logging.warning("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
     else:
         projects = pd.unique(df['project'])
         valid_report = False # Flag to create the report if at least one project qualifies re notation.        
@@ -143,7 +143,7 @@ def main(args):
                 journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>Project: "+ str(p) + "</b></h3>"
                 journal_text = journal_text + format_output(newdf, nof_pages)
             else:
-                logging.warn("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+                logging.warning("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
         if valid_report: # Since we got many possible projects that qualify we need only one footer in the end of the documents.
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
