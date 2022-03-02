@@ -72,7 +72,7 @@ Meeting w/ John [N] - Refactor library X - We need another awesome Senior Dev
 
 ![screenshot](/images/screenshot_1.png)
 
-## Example output
+## Output & Sample files
 
 There are two output templates:
 
