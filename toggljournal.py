@@ -110,9 +110,9 @@ def main(args):
 
     response = toggl.request("https://api.track.toggl.com/api/v8/me")
     workspace_id = str(response['data']['default_wid']) # //TODO: extend functionality for multiple workspace accounts / paid feature.
-    logging.info("Workspace_id infered from API")   
+    logging.info("Workspace_id inferred from API")   
     fullname = str(response['data']['fullname'])
-    logging.info("Fullanme infered from API") 
+    logging.info("Fullanme inferred from API") 
 
     response = toggl.request("https://api.track.toggl.com/reports/api/v2/details?workspace_id=" + workspace_id 
         + "&since=" + since 
@@ -125,7 +125,10 @@ def main(args):
     # Initialize journal string with Project, Author, Start & End report dates. We chose html format since it can easily be exported in .html and .pdf formats.
     # //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed to templates!
     journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
-    journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> by <span style='background-color: #eee'>" + fullname + "</span></h1>"
+    if project != "ALL":
+        journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: #eee'>" + project + "</span> <br>by <span style='background-color: #eee'>" + fullname + "</span></h1>"
+    else:
+        journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> projects <br>by <span style='background-color: #eee'>" + fullname + "</span></h1>"
     journal_text = journal_text + "<h2> From: <span style='background-color: #eee'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: #eee'>" + until_date.strftime('%d %b %Y') + "</span></h2>"
     journal_text = journal_text + "<hr>"
     
