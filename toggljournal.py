@@ -9,6 +9,7 @@ import sys
 import pdfkit
 import pandas as pd
 import logging
+import constants
 from datetime import date
 from datetime import datetime
 from toggl.TogglPy import Toggl
@@ -54,7 +55,7 @@ def format_output(entries, nofpages):
                 # If this is a new date, then start a new date section in the report. 
                 # NOTE: This check needs to be performed between strings always, otherwise it returns TRUE (since str <> datetime).
                 if str(temp_date.strftime('%d %b %Y')) != cur_date:
-                    journal_text = journal_text + "<h4><span style='background-color: #eee'>Date: " + temp_date.strftime('%d %b %Y') + "</span></h4>"
+                    journal_text = journal_text + "<h4><span style='background-color: " + constants.H4BGCOLOR + "'>Date: " + temp_date.strftime('%d %b %Y') + "</span></h4>"
                     cur_date = str(temp_date.strftime('%d %b %Y'))
                 # Else just append the note of the TE to the current date section.
                 temp_description = entries['description'][ind].split('[N]')
@@ -126,16 +127,16 @@ def main(args):
     # //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed to templates!
     journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
     if project != "ALL":
-        journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: #eee'>" + project + "</span> <br>by <span style='background-color: #eee'>" + fullname + "</span></h1>"
+        journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until_date.strftime('%d %b %Y') + "</span></h1>"
     else:
-        journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: #eee'>" + project + "</span> projects <br>by <span style='background-color: #eee'>" + fullname + "</span></h1>"
-    journal_text = journal_text + "<h2> From: <span style='background-color: #eee'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: #eee'>" + until_date.strftime('%d %b %Y') + "</span></h2>"
+        journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> projects <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until_date.strftime('%d %b %Y') + "</span></h1>"
     journal_text = journal_text + "<hr>"
+    journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + "'> PROJECTS </h2>"
     
     if project != "ALL":
         newdf = filter_te_with_project(df, project)
         if hasN(newdf):
-            journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>" + project + "</b></h3>"
+            journal_text = journal_text + "<h3 span style='text-align: center; background-color: " + constants.H3BGCOLOR + ";'><b>" + project + "</b></h3>"
             journal_text = journal_text + format_output(newdf, nof_pages)
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
@@ -146,12 +147,17 @@ def main(args):
         valid_report = False # Flag to create the report if at least one project qualifies re notation.        
         for p in projects:
             newdf = filter_te_with_project(df, p)
-            if hasN(newdf): #  Check if it qualifies re notation.
+            if hasN(newdf) and p != "Personal Journal": #  Check if it qualifies re notation.
                 valid_report = True
-                journal_text = journal_text + "<h3 span style='text-align: center; background-color: #ddd;'><b>Project: "+ str(p) + "</b></h3>"
+                journal_text = journal_text + "<h3 style='text-align: center; background-color: " + constants.H3BGCOLOR + ";'><b>Project: "+ str(p) + "</b></h3>"
                 journal_text = journal_text + format_output(newdf, nof_pages)
             else:
                 logging.warning("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+        newdf = filter_te_with_project(df, 'Personal Journal')
+        if hasN(newdf): #  Check if it qualifies re notation.
+            valid_report = True
+            journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + ";'><b>JOURNAL</b></h2>"
+            journal_text = journal_text + format_output(newdf, nof_pages)
         if valid_report: # Since we got many possible projects that qualify we need only one footer in the end of the documents.
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
