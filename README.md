@@ -18,7 +18,7 @@ __NOTES:__
 
 - For the time being it works only for a single workspace / the default workspace of the user. 
 
-## Install Dependencies
+## Dependencies
 
 In order for the script to run you need to install the following dependencies:
 
@@ -49,7 +49,7 @@ sudo apt-get install wkhtmltopdf
 ## Run the script
 
 ```python
-python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME>
+python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL*>
 ```
 
 - <TOGGL_API_KEY> (string): The unique user's API Key. You can find it by following [this official guide](https://support.toggl.com/en/articles/3116844-where-is-my-api-key-located).
@@ -58,7 +58,10 @@ python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME>
 
 - <END_DATE> (string): The end date in YYYY-MM-DD format (i.e. 2022-02-22).
 
-- <PROJECT_NAME> (string): The project name for which we want to create a report or "ALL" if we want a report for all available projects between the time period defined by START_DATE and END_DATE.
+- <PROJECT_NAME> (string): The project name for which we want to create a report or "ALL" if we want a report for all available projects between the time period defined by START_
+DATE and END_DATE.
+
+- <PERSONAL_JOURNAL*> (string): The name of the project you want to be used as a Personal Journal. IMPORTANT: You can ommit this parameter as it is not mandatory. In this case none of the projects will be treated as a Personal Journal.
 
 # Annotation in the Toggl Environment
 
@@ -89,6 +92,7 @@ The script comes with a log (app.log) in which you will find notes during the ru
 - [ WARNING ] entries: Are notes recorded by the app in case something goes wrong / or to clarify specific functionality of the script.
 ## Future work
 
+- For projects with TEs that contain tags, provide a time / tag summary (table + chart)
 - Send the report directly by e-mail
 - Support .odt format
 - Support .doc format

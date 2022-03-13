@@ -3,7 +3,8 @@
 # Author:           Apostolos Kritikos <akritiko@gmail.com>
 # License:          MIT (human readable version: https://www.tldrlegal.com/l/mit)
 # Code Repository:  https://github.com/akritiko/toggl-journal
-# Console Command:  python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME>
+# Console Command:  python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL*>
+#                   * <PERSONAL_JOURNAL> is not a mandatory parameter and can be ommitted.
 
 import sys
 import pdfkit
@@ -31,8 +32,8 @@ def filter_te_with_project(entries, project_name):
 
 def hasN(entries):
     """ Checks if the TEs in a collection follow the notation of toggl-journal. If none of the collection's TEs 
-    follow the right notation, then the collection is ignored entirely by the script. If even one TE follows
-    the notation, the collection qualifies and the TEs that do not follow the notation will be excluded in the
+    follow the right notation, then the function will return FALSE. If even one TE follows the notation, the collection 
+    qualifies and the script returns TRUE. NOTE: The TEs that do not follow the notation will be excluded in the
     output formatting process (def format_output). """
     hasN = False
     for ind in entries.index:
@@ -74,6 +75,22 @@ def format_output(entries, nofpages):
                 journal_text = journal_text + "</ul>"
     return journal_text
 
+def create_report_header(journal_text, fullname, project, since, until, personal_journal):
+    """ Initialize journal string with Project, Author, Start & End report dates. We chose html format since it can easily be exported in .html and .pdf formats.
+    //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed 
+    to templates!"""
+    journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
+    if project != personal_journal:
+        if project != "ALL":
+            journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
+        else:
+            journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> projects <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
+        journal_text = journal_text + "<hr>"
+        journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + "'> PROJECTS </h2>"
+    else: 
+        journal_text = journal_text + "<h1>Toggl <span style='background-color: " + constants.H1BGCOLOR + "'> Personal Journal</span> by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> <br>from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
+    return journal_text
+
 def create_report_footer(journal_text):
     """ Create report's footer. """
     today = datetime.now()
@@ -91,20 +108,47 @@ def exports(journal_text, fullname, project, since, until):
     Html_file.close()
     pdfkit.from_file(filename, filename_no_ext + ".pdf")
 
+def create_project_entry(journal_text, newdf, nof_pages, project):
+    journal_text = journal_text + "<h3 style='text-align: center; background-color: " + constants.H3BGCOLOR + ";'><b>Project: "+ str(project) + "</b></h3>"
+    journal_text = journal_text + format_output(newdf, nof_pages)
+    return journal_text
+
+def create_journal_entry(journal_text, newdf, nof_pages):
+    journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + ";'><b>PERSONAL JOURNAL</b></h2>"
+    journal_text = journal_text + format_output(newdf, nof_pages)
+    return journal_text
+
 def main(args):
     """ Main function. """
     logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO, format='%(asctime)s [ %(levelname)s ] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
-    toggl_api_key = sys.argv[1] # User's Toggl API Key.
-    since = sys.argv[2] # Report's Start Date (in YYYY-MM-DD format).
-    since_date = datetime.strptime(since, '%Y-%m-%d')   
-    until = sys.argv[3] # Report's End Date (in YYYY-MM-DD format).
-    until_date = ""                                 
-    if until != 'TODAY': # If 'TODAY' keyword is used: 
-        until_date = datetime.strptime(until, '%Y-%m-%d')
-    else: # Else if a date is provided:
-        until = str(date.today())
-        until_date = datetime.strptime(until, '%Y-%m-%d')
-    project = sys.argv[4] # Project Name or ALL for all projects.
+    toggl_api_key = ""
+    since_date = ""
+    until_date = ""
+    project = ""
+    personal_journal = ""
+
+    if args and len(args) >= 4:
+        toggl_api_key = sys.argv[1] # User's Toggl API Key.
+        since = sys.argv[2] # Report's Start Date (in YYYY-MM-DD format).
+        since_date = datetime.strptime(since, '%Y-%m-%d')
+        until = sys.argv[3] # Report's End Date (in YYYY-MM-DD format).
+        until_date = ""
+        if until != 'TODAY': # If 'TODAY' keyword is used: 
+            until_date = datetime.strptime(until, '%Y-%m-%d')
+        else: # Else if a date is provided:
+            until = str(date.today())
+            until_date = datetime.strptime(until, '%Y-%m-%d')
+        project = sys.argv[4] # Project Name or ALL for all projects.
+        if len(args) > 4:
+            personal_journal = sys.argv[5]
+        else:
+            personal_journal = "-999"        
+    else:
+        logging.error("Invalid command. Please call the script again using the command: <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL>")
+        print("[error] Invalid command. Please call the script again using the command: <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL>. Program will exit!")
+        exit()
+
+    print(args)
 
     toggl = Toggl()
     toggl.setAPIKey(toggl_api_key)
@@ -123,41 +167,36 @@ def main(args):
     total_te = len(df) # Store total TEs number and calculate pages (50 TEs per page - API limit -).
     nof_pages = round(total_te / 50)
 
-    # Initialize journal string with Project, Author, Start & End report dates. We chose html format since it can easily be exported in .html and .pdf formats.
-    # //XXX: The CSS styling is fused to the data due to time brevity :) In future extensions the styling of the report should be extracted from the code and transformed to templates!
-    journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
-    if project != "ALL":
-        journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until_date.strftime('%d %b %Y') + "</span></h1>"
-    else:
-        journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> projects <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since_date.strftime('%d %b %Y') + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until_date.strftime('%d %b %Y') + "</span></h1>"
-    journal_text = journal_text + "<hr>"
-    journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + "'> PROJECTS </h2>"
+    journal_text = journal_text + create_report_header(journal_text, fullname, project, since, until, personal_journal)
     
     if project != "ALL":
         newdf = filter_te_with_project(df, project)
         if hasN(newdf):
-            journal_text = journal_text + "<h3 span style='text-align: center; background-color: " + constants.H3BGCOLOR + ";'><b>" + project + "</b></h3>"
-            journal_text = journal_text + format_output(newdf, nof_pages)
+            if project == personal_journal:
+                journal_text = create_journal_entry(journal_text, newdf, nof_pages)
+            else:
+                journal_text = create_project_entry(journal_text, newdf, nof_pages, project)
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
         else:
-            logging.warning("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
+            logging.warning("Project *" + str(project) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.")     
     else:
         projects = pd.unique(df['project'])
         valid_report = False # Flag to create the report if at least one project qualifies re notation.        
         for p in projects:
             newdf = filter_te_with_project(df, p)
-            if hasN(newdf) and p != "Personal Journal": #  Check if it qualifies re notation.
+            if hasN(newdf) and p != personal_journal: #  Check if it qualifies re notation.
                 valid_report = True
-                journal_text = journal_text + "<h3 style='text-align: center; background-color: " + constants.H3BGCOLOR + ";'><b>Project: "+ str(p) + "</b></h3>"
-                journal_text = journal_text + format_output(newdf, nof_pages)
+                journal_text = create_project_entry(journal_text, newdf, nof_pages, p)
             else:
                 logging.warning("Project *" + str(p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.") 
-        newdf = filter_te_with_project(df, 'Personal Journal')
+        newdf = filter_te_with_project(df, personal_journal) 
         if hasN(newdf): #  Check if it qualifies re notation.
             valid_report = True
-            journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + ";'><b>JOURNAL</b></h2>"
-            journal_text = journal_text + format_output(newdf, nof_pages)
+            if personal_journal != "-999":
+                journal_text = create_journal_entry(journal_text, newdf, nof_pages)
+            else:
+                logging.info("No personal journal found!")
         if valid_report: # Since we got many possible projects that qualify we need only one footer in the end of the documents.
             journal_text = create_report_footer(journal_text)
             exports(journal_text, fullname, project, since, until)
