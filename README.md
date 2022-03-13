@@ -10,9 +10,11 @@ This is a proof of concept project tarted in order for me to get familiar with t
 
 - Automatically creates reports from Toggl Time Entries based on project and time windows (since - until dates).
 - If the user puts 'ALL' instead of a project name, the script generates a report for all projects within the since - until timeframe.
+- If the user define the name of the project as PERSONAL_JOURNAL in input, then a special JOURNAL section is created to the report using the time entries of this project.
 - Generates report in .html format.
 - Generates report in .pdf format.
-- Handles pagination for high time entry volume, respecting the API limitations. 
+- Handles pagination for time entries > 50, respecting the API limitations. 
+- Handles UTF-8 special characters (i.e. Greek / Cyrillic alphabet).
 
 __NOTES:__
 
