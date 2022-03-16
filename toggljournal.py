@@ -41,6 +41,12 @@ def hasN(entries):
             hasN = True
     return hasN
 
+def export_tags(entries):
+    entries_text = ""
+    for entry in entries:
+        entries_text = entries_text + str(entry) + " &#8226; "
+    return entries_text
+
 def format_output(entries, nofpages):
     """ Formats the output of the qualified TEs. """
     cur_date = ""
@@ -63,9 +69,9 @@ def format_output(entries, nofpages):
                 temp_title = temp_description[0]
                 # Append the title of the note. It is stored before [N] in the Toggl TE.
                 if entries['project'][ind] == "Personal Journal":
-                    journal_text = journal_text + "<p><u>Entry</u>: <b>"+ temp_title + "</b></p>"
+                    journal_text = journal_text + "<p><u>Entry</u>: <b>"+ temp_title + "</b> <br> Tags: " + export_tags(entries['tags'][ind]) + "</p>"
                 else:
-                    journal_text = journal_text + "<p><u>Action</u>: <b>"+ temp_title + "(" + convert_millies_to_time(str(entries['dur'][ind])) + ")" + "</b></p>"
+                    journal_text = journal_text + "<p>Action: <b>"+ temp_title + "</b> Duration: <b>" + convert_millies_to_time(str(entries['dur'][ind])) + "</b> <br>Tags: " + export_tags(entries['tags'][ind]) + "</p>"
                 # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a note).
                 temp_notes = temp_description[1].split('-')
                 journal_text = journal_text + "<ul style='list-style-type: circle;'>"
@@ -82,9 +88,9 @@ def create_report_header(journal_text, fullname, project, since, until, personal
     journal_text = "<html><head><meta charset=\"UTF-8\"></head><body>"
     if project != personal_journal:
         if project != "ALL":
-            journal_text = journal_text + "<h1>Toggl Journal Report for project <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
+            journal_text = journal_text + "<h1>Toggl Journal for project <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
         else:
-            journal_text = journal_text + "<h1>Toggl Journal Report for <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> projects <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
+            journal_text = journal_text + "<h1>Toggl Journal for <span style='background-color: " + constants.H1BGCOLOR + "'>" + project + "</span> projects <br>by <span style='background-color: " + constants.H1BGCOLOR + "'>" + fullname + "</span> from: <span style='background-color: " + constants.H1BGCOLOR + "'>" + since + "</span> to <span style='background-color: " + constants.H1BGCOLOR + "'>" + until + "</span></h1>"
         journal_text = journal_text + "<hr>"
         journal_text = journal_text + "<h2 style='text-align: center; background-color: " + constants.H2BGCOLOR + "'> PROJECTS </h2>"
     else: 
@@ -126,6 +132,7 @@ def main(args):
     until_date = ""
     project = ""
     personal_journal = ""
+    journal_text = ""
 
     if args and len(args) >= 4:
         toggl_api_key = sys.argv[1] # User's Toggl API Key.
@@ -147,8 +154,6 @@ def main(args):
         logging.error("Invalid command. Please call the script again using the command: <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL>")
         print("[error] Invalid command. Please call the script again using the command: <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <PERSONAL_JOURNAL>. Program will exit!")
         exit()
-
-    print(args)
 
     toggl = Toggl()
     toggl.setAPIKey(toggl_api_key)
