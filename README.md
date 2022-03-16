@@ -77,15 +77,6 @@ Meeting w/ John [N] - Refactor library X - We need another awesome Senior Dev
 
 ![screenshot](/images/screenshot_1.png)
 
-## Output & Sample files
-
-There are two output templates:
-
-- Report for a specific project name.
-- Report for all projects within a selected timeframe.
-
-You can find examples of these reports in .html and .pdf format in [sample_exports](/sample_exports) folder.
-
 ## Logging
 
 The script comes with a log (app.log) in which you will find notes during the runtime of the project. 
@@ -94,6 +85,7 @@ The script comes with a log (app.log) in which you will find notes during the ru
 - [ WARNING ] entries: Are notes recorded by the app in case something goes wrong / or to clarify specific functionality of the script.
 ## Future work
 
+- Select specific projects (comma separated) when calling the script
 - For projects with TEs that contain tags, provide a time / tag summary (table + chart)
 - Send the report directly by e-mail
 - Support .odt format
