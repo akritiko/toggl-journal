@@ -122,12 +122,19 @@ def create_report_footer(journal_text):
 
 def exports(journal_text, fullname, project, since, until):
     """ Generate report in .html and .pdf formats. """
+    options = {
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+    }
     filename = fullname + " - " + project + " - " + since + " - " + until + ".html"
     filename_no_ext = fullname + " - " + project + " - " + since + " - " + until
     Html_file = open(filename, "w", encoding='utf8')
     Html_file.write(journal_text)
     Html_file.close()
-    pdfkit.from_file(filename, filename_no_ext + ".pdf")
+    pdfkit.from_file(filename, filename_no_ext + ".pdf", options=options)
 
 
 def create_project_entry(journal_text, newdf, nof_pages, project):
