@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Welcome to Toggl Journal</h1>
+    <p>This is a proof of concept  website.</p>
+    <h2>Please complete the following form to get your report (none of the information provided are stored in our server):</h2>
+    <form action = "http://localhost:5000/login" method = "post">
+        <p>Enter Toggl API (text):</p>
+        <p><input type = "text" name = "togglapi" /></p>
+        <p>Enter since Date (text):</p>
+        <p><input type = "text" name = "since" /></p>
+        <p>Enter until Date (text):</p>
+        <p><input type = "text" name = "until" /></p>
+        <p>Enter project name (text):</p>
+        <p><input type = "text" name = "project" /></p>
+        <p>Enter personal journal name (text):</p>
+        <p><input type = "text" name = "journal" /></p>
+        <p><input type = "submit" value = "submit" /></p>
+	</form>
+</body>
+</html>
