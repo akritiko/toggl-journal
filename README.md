@@ -58,7 +58,7 @@ python toggljournal.py <TOGGL_API_KEY> <START_DATE> <END_DATE> <PROJECT_NAME> <P
 
 - <START_DATE> (string): The start date in YYYY-MM-DD format (i.e. 2022-02-22).
 
-- <END_DATE> (string): The end date in YYYY-MM-DD format (i.e. 2022-02-22).
+- <END_DATE> (string): The end date in YYYY-MM-DD format (i.e. 2022-02-22). You can also use the keyword "TODAY" to get the current date.
 
 - <PROJECT_NAME> (string): The project name for which we want to create a report or "ALL" if we want a report for all available projects between the time period defined by START_
 DATE and END_DATE.
