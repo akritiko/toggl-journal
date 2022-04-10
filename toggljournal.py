@@ -202,6 +202,8 @@ def main(args):
     df = pd.DataFrame(response['data'])
     total_te = len(df)  # Store total TEs number and calculate pages (50 TEs per page - API limit -).
     nof_pages = round(total_te / 50)
+    if (nof_pages == 0):
+        nof_pages = 1
 
     journal_text = journal_text + create_report_header(fullname, project, since, until, personal_journal)
 
