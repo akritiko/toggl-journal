@@ -35,14 +35,14 @@ def filter_te_with_project(entries, project_name):
     return entries[entries['project'] == project_name]
 
 
-def containsn(entries):
+def contains_notes_delimiter(entries):
     """ Checks if the TEs in a collection follow the notation of toggl-journal. If none of the collection's TEs 
     follow the right notation, then the function will return FALSE. If even one TE follows the notation, the collection 
     qualifies and the script returns TRUE. NOTE: The TEs that do not follow the notation will be excluded in the
     output formatting process (def format_output). """
     hasn = False
     for ind in entries.index:
-        if entries['description'][ind].find('[N]') != -1:
+        if entries['description'][ind].find(constants.NOTES_DEL) != -1:
             hasn = True
     return hasn
 
@@ -63,7 +63,7 @@ def format_output(entries, nofpages):
         # For every TE.
         for ind in entries.index:
             # check if the TE follows the notation and if not, ignore this specific TE.
-            if entries['description'][ind].find('[N]') != -1:
+            if entries['description'][ind].find(constants.NOTES_DEL) != -1:
                 # ...get the date of the TE and check if it is a new date.
                 temp_date = datetime.strptime(entries['start'][ind], '%Y-%m-%dT%H:%M:%S%z')
                 # If this is a new date, then start a new date section in the report. NOTE: This check needs to be
@@ -73,16 +73,16 @@ def format_output(entries, nofpages):
                         '%d %b %Y') + "</span></h4>"
                     cur_date = str(temp_date.strftime('%d %b %Y'))
                 # Else just append the note of the TE to the current date section.
-                temp_description = entries['description'][ind].split('[N]')
+                temp_description = entries['description'][ind].split(constants.NOTES_DEL)
                 temp_title = temp_description[0]
-                # Append the title of the note. It is stored before [N] in the Toggl TE.
+                # Append the title of the note. It is stored before constants.NOTES_DEL in the Toggl TE.
                 if entries['project'][ind] == "Personal Journal":
                     journal_text = journal_text + "<p><u>Entry</u>: <b>" + temp_title + "</b> <br> Tags: " + export_tags(
                         entries['tags'][ind]) + "</p>"
                 else:
                     journal_text = journal_text + "<p>Action: <b>" + temp_title + "</b> Duration: <b>" + convert_millies_to_time(
                         str(entries['dur'][ind])) + "</b> <br>Tags: " + export_tags(entries['tags'][ind]) + "</p>"
-                # Append the notes of the TE. They are stored after [N] and separated by '-' (each dash indicates a
+                # Append the notes of the TE. They are stored after constants.NOTES_DEL and separated by '-' (each dash indicates a
                 # note).
                 temp_notes = temp_description[1].split('-')
                 journal_text = journal_text + "<ul style='list-style-type: circle;'>"
@@ -209,7 +209,7 @@ def main(args):
 
     if project != "ALL":
         newdf = filter_te_with_project(df, project)
-        if containsn(newdf):
+        if contains_notes_delimiter(newdf):
             if project == personal_journal:
                 journal_text = create_journal_entry(journal_text, newdf, nof_pages)
             else:
@@ -224,14 +224,14 @@ def main(args):
         valid_report = False  # Flag to create the report if at least one project qualifies re notation.
         for p in projects:
             newdf = filter_te_with_project(df, p)
-            if containsn(newdf) and p != personal_journal:  # Check if it qualifies re notation.
+            if contains_notes_delimiter(newdf) and p != personal_journal:  # Check if it qualifies re notation.
                 valid_report = True
                 journal_text = create_project_entry(journal_text, newdf, nof_pages, p)
             else:
                 logging.warning("Project *" + str(
                     p) + "* either does not exists or does not have any Time Entries that follow the toggl-journal notation.")
         newdf = filter_te_with_project(df, personal_journal)
-        if containsn(newdf):  # Check if it qualifies re notation.
+        if contains_notes_delimiter(newdf):  # Check if it qualifies re notation.
             valid_report = True
             if personal_journal != "-999":
                 journal_text = create_journal_entry(journal_text, newdf, nof_pages)
