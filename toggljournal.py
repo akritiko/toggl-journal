@@ -193,7 +193,7 @@ def main(args):
         response['data']['default_wid'])  # //TODO: extend functionality for multiple workspace accounts / paid feature.
     logging.info("Workspace_id inferred from API")
     fullname = str(response['data']['fullname'])
-    logging.info("Fullanme inferred from API")
+    logging.info("Fullname inferred from API")
 
     response = toggl.request("https://api.track.toggl.com/reports/api/v2/details?workspace_id=" + workspace_id
                              + "&since=" + since
