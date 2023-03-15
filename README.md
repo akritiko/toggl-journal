@@ -8,6 +8,7 @@ This is a proof of concept project tarted in order for me to get familiar with t
 
 ## Features
 
+- Works in Windows and Linux operating systems.
 - Automatically creates reports from Toggl Time Entries based on project and time windows (since - until dates).
 - If the user puts 'ALL' instead of a project name, the script generates a report for all projects within the since - until timeframe.
 - If the user define the name of the project as PERSONAL_JOURNAL in input, then a special JOURNAL section is created to the report using the time entries of this project.
